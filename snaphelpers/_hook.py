@@ -54,7 +54,8 @@ class Hook(NamedTuple):
 
 
 def get_hooks(
-    entry_points: Callable[..., EntryPoints] = entry_points
+    entry_points: Callable[..., EntryPoints] = entry_points,
+    module: str | None = None,
 ) -> List[Hook]:
     """Return registered snap hooks.
 
@@ -70,7 +71,9 @@ def get_hooks(
        install = "foo.bar:install_hook"
 
     """
-    return [
-        Hook.from_entry_point(entry_point)
-        for entry_point in entry_points(group=HOOKS_ENTRY_POINT)
-    ]
+    e_points = (
+        entry_points(group=HOOKS_ENTRY_POINT, module=module)
+        if module
+        else entry_points(group=HOOKS_ENTRY_POINT)
+    )
+    return [Hook.from_entry_point(entry_point) for entry_point in e_points]

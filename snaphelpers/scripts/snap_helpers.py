@@ -80,6 +80,10 @@ class SnapHelpersScript(Script):
             help="fail if no hook is found.",
             action="store_true",
         )
+        write_hooks.add_argument(
+            "--module",
+            help="specific module to write hooks from",
+        )
         return parser
 
     def run(self, options: Namespace) -> int:
@@ -97,7 +101,9 @@ class SnapHelpersScript(Script):
                 "CRAFT_PRIME", fallback="SNAPCRAFT_PRIME"
             )
 
-        hooks = sorted(get_hooks(), key=attrgetter("name"))
+        hooks = sorted(
+            get_hooks(module=options.module), key=attrgetter("name")
+        )
         self._validate_hooks(hooks)
         if not hooks:
             self.print(
